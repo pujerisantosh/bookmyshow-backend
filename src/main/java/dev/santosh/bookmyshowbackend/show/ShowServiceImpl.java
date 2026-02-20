@@ -1,7 +1,10 @@
 package dev.santosh.bookmyshowbackend.show;
 
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
+@Service
 public class ShowServiceImpl  implements  ShowService{
 
     private final ShowRepository showRepository;
@@ -11,7 +14,8 @@ public class ShowServiceImpl  implements  ShowService{
     }
 
     @Override
-    public List<Show> getShowsByMovieAndCity(Long movieId, String city) {
-        return showRepository.findShowsByMovieAndCity(movieId,city);
+    public List<Show> getShows(Long movieId, String city) {
+        return showRepository.findShowsByMovieAndCity(movieId, city);
     }
+
 }
