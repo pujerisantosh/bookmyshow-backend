@@ -5,7 +5,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class TheatreServiceImpl implements  TheatreService {
+public class TheatreServiceImpl implements TheatreService {
+
 
     private final TheatreRepository theatreRepository;
 
@@ -15,7 +16,7 @@ public class TheatreServiceImpl implements  TheatreService {
 
 
     @Override
-    public Theatre createTheatre(Theatre theatre){
+    public Theatre createTheatre(Theatre theatre) {
         return theatreRepository.save(theatre);
 
 
@@ -23,7 +24,7 @@ public class TheatreServiceImpl implements  TheatreService {
 
 
     @Override
-    public List<Theatre> findByCity(String city){
+    public List<Theatre> findByCity(String city) {
 
         return theatreRepository.findByCity(city);
 
@@ -31,5 +32,7 @@ public class TheatreServiceImpl implements  TheatreService {
     }
 
 
-
 }
+
+
+

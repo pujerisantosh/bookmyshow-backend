@@ -1,9 +1,7 @@
 package dev.santosh.bookmyshowbackend.show;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import dev.santosh.bookmyshowbackend.dto.CreateShowRequest;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,5 +21,14 @@ public class ShowController {
             @RequestParam String city
     ) {
         return showService.getShows(movieId, city);
+    }
+
+
+
+    @PostMapping
+    public Show createShow(@RequestBody CreateShowRequest createShowRequest){
+
+return showService.createShow(createShowRequest);
+
     }
 }
