@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface ShowSeatRepository extends JpaRepository<ShowSeat, Long> {
 
-          List<Seat> findByShowIdAndStatus(Long showId, SeatStatus status);
+          List<ShowSeat> findByShowIdAndStatus(Long showId, SeatStatus status);
 
 }
