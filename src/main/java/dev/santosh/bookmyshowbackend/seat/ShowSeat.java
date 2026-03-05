@@ -2,9 +2,13 @@ package dev.santosh.bookmyshowbackend.seat;
 
 import dev.santosh.bookmyshowbackend.show.Show;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "show_seats")
+@Getter
+@Setter
 public class ShowSeat {
 
     @Id
@@ -22,8 +26,10 @@ public class ShowSeat {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
 
-
     private SeatStatus status;
+
+    @Version
+    private Integer version;
 
     public Long getId() {
         return id;
@@ -55,5 +61,13 @@ public class ShowSeat {
 
     public void setStatus(SeatStatus status) {
         this.status = status;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 }

@@ -18,6 +18,9 @@ public class Movie {
     @Column(nullable = false)
     private Integer duration;
 
+    @Version
+    private Integer version;
+
     //Required by JPA
     protected Movie() {
 
