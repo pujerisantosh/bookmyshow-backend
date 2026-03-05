@@ -17,4 +17,10 @@ public class MovieServiceImpl implements MovieService{
     public List<Movie> getMoviesByCity(String city) {
         return movieRepository.findMoviesByCity(city);
     }
+
+    @Override
+    public Movie createMovie(Movie movie) {
+        movie.setId(null);
+        return movieRepository.save(movie);
+    }
 }

@@ -1,8 +1,9 @@
 package dev.santosh.bookmyshowbackend.theatre;
 
-import dev.santosh.bookmyshowbackend.movie.Movie;
 import jakarta.persistence.*;
+import lombok.Getter;
 
+@Getter
 @Entity
 @Table(name = "theatres")
 public class Theatre {
@@ -30,24 +31,12 @@ public class Theatre {
 
     }
 
-    public Long getId() {
-        return id;
-    }
-
     public void setId(Long id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getCity() {
-        return city;
     }
 
     public void setCity(String city) {

@@ -1,10 +1,7 @@
 package dev.santosh.bookmyshowbackend.movie;
 
 import jakarta.persistence.GeneratedValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -15,7 +12,17 @@ public class MovieController {
 public final MovieService movieService;
 
     public MovieController(MovieService movieService) {
+
         this.movieService = movieService;
+    }
+
+
+
+    @PostMapping
+    public Movie createMovie(@RequestBody Movie movie){
+
+
+        return movieService.createMovie(movie);
     }
 
 

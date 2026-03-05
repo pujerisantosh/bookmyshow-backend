@@ -5,4 +5,7 @@ import java.util.List;
 public interface MovieService {
 
     List<Movie> getMoviesByCity(String city);
+
+
+    Movie createMovie(Movie movie);
 }
