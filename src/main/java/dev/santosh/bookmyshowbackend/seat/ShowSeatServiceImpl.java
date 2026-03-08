@@ -3,6 +3,7 @@ package dev.santosh.bookmyshowbackend.seat;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -44,6 +45,30 @@ public class ShowSeatServiceImpl implements ShowSeatService{
         }
 
         showSeatRepository.saveAll(seats);
+
+    }
+
+
+    @Transactional
+    public void lockSeats(List<Long> showSeatIds){
+
+        List<ShowSeat> seats = showSeatRepository.findAllById(showSeatIds);
+
+        for (ShowSeat seat : seats){
+
+            if (seat.getStatus() != SeatStatus.AVAILABLE){
+
+                throw  new RuntimeException("Seat is not available");
+            }
+
+            seat.setStatus(SeatStatus.LOCKED);
+
+            seat.setLockedAT(LocalDateTime.now());
+
+        }
+
+        showSeatRepository.saveAll(seats);
+
 
     }
 }
