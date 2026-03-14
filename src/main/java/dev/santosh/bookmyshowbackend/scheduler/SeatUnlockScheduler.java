@@ -33,7 +33,7 @@ public class SeatUnlockScheduler {
             for (ShowSeat seat : expiredSeats) {
 
                 seat.setStatus(SeatStatus.AVAILABLE);
-                seat.setLockedAT(null);
+                seat.setLockedAt(null);
             }
 
             showSeatRepository.saveAll(expiredSeats);
