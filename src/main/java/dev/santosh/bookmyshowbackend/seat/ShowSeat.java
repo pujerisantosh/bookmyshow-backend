@@ -33,7 +33,7 @@ public class ShowSeat {
     private Integer version;
 
 
-    private LocalDateTime lockedAT;
+    private LocalDateTime lockedAt;
 
     public Long getId() {
         return id;
@@ -75,11 +75,13 @@ public class ShowSeat {
         this.version = version;
     }
 
-    public LocalDateTime getLockedAT() {
-        return lockedAT;
+    public LocalDateTime getLockedAt() {
+        return lockedAt;
     }
 
-    public void setLockedAT(LocalDateTime lockedAT) {
-        this.lockedAT = lockedAT;
+    public void setLockedAt(LocalDateTime lockedAt) {
+        this.lockedAt = lockedAt;
     }
+
+
 }

@@ -63,7 +63,7 @@ public class ShowSeatServiceImpl implements ShowSeatService{
 
             seat.setStatus(SeatStatus.LOCKED);
 
-            seat.setLockedAT(LocalDateTime.now());
+            seat.setLockedAt(LocalDateTime.now());
 
         }
 
