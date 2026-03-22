@@ -2,6 +2,7 @@ package dev.santosh.bookmyshowbackend.booking;
 
 import dev.santosh.bookmyshowbackend.booking.event.BookingEventPublisher;
 import dev.santosh.bookmyshowbackend.dto.BookSeatRequest;
+import dev.santosh.bookmyshowbackend.dto.CreateBookingRequest;
 import dev.santosh.bookmyshowbackend.seat.SeatStatus;
 import dev.santosh.bookmyshowbackend.seat.ShowSeat;
 import dev.santosh.bookmyshowbackend.seat.ShowSeatRepository;
@@ -49,9 +50,26 @@ public class BookingServiceImpl implements BookingService {
 
 
     @Transactional
-    public Booking confirmBooking(List<Long> showSeatIds) {
+    public Booking createBooking(CreateBookingRequest request) {
+        Booking booking = new Booking();
+        booking.setShowId(request.getShowId());
+        booking.setUserId(request.getUserId());
+        booking.setShowSeatIds(request.getShowSeatIds());
+        booking.setStatus(BookingStatus.PENDING);
 
-        List<ShowSeat> seats = showSeatRepository.findAllById(showSeatIds);
+        return bookingRepository.save(booking);
+    }
+
+
+    @Transactional
+    public Booking confirmBooking(Long bookingId) {
+
+        // 1. Get existing booking
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        // 2. Fetch seats
+        List<ShowSeat> seats = showSeatRepository.findAllById(booking.getShowSeatIds());
 
         for (ShowSeat seat : seats) {
             if (seat.getStatus() != SeatStatus.LOCKED) {
@@ -62,15 +80,16 @@ public class BookingServiceImpl implements BookingService {
 
         showSeatRepository.saveAll(seats);
 
-        Booking newBooking = new Booking();
-        newBooking.setSeats(seats);
-        newBooking.setStatus(BookingStatus.CONFIRMED);
+        // 3. Update booking
+        booking.setStatus(BookingStatus.CONFIRMED);
 
-        Booking booking = bookingRepository.save(newBooking);
+        Booking savedBooking = bookingRepository.save(booking);
 
-        // publish event
-        bookingEventPublisher.publishBookingConfirmed(booking);
+        // 4. Publish event
+        bookingEventPublisher.publishBookingConfirmed(savedBooking);
 
-        return booking;
+        return savedBooking;
     }
+
+
 }

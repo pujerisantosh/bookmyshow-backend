@@ -17,23 +17,15 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long showId;
+
     private Long userId;
+
+    // 🔥 Store only IDs (lightweight + scalable)
+    @ElementCollection
+    private List<Long> showSeatIds;
 
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
-
-
-    @OneToMany
-    private List<ShowSeat> seats;
-
-
-    public void setSeats(List<ShowSeat> seats) {
-        this.seats = seats;
-    }
-
-    public void setStatus(BookingStatus bookingStatus) {
-        this.status = bookingStatus;
-    }
-
 
 }
