@@ -9,10 +9,16 @@ import java.util.List;
 @Setter
 public class BookSeatRequest {
 
-    private final List<Long> showSeatIds;
+    private List<Long> showSeatIds;
 
+    public BookSeatRequest() {
+    }
 
-    public BookSeatRequest(List<Long> showSeatIds) {
+    public List<Long> getShowSeatIds() {
+        return showSeatIds;
+    }
+
+    public void setShowSeatIds(List<Long> showSeatIds) {
         this.showSeatIds = showSeatIds;
     }
 }
