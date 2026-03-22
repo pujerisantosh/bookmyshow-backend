@@ -1,19 +1,26 @@
 package dev.santosh.bookmyshowbackend.seat;
 
+import dev.santosh.bookmyshowbackend.show.Show;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class ShowSeatServiceImpl implements ShowSeatService{
+public class ShowSeatServiceImpl implements ShowSeatService {
 
 
-    private final  ShowSeatRepository showSeatRepository;
+    @Autowired
+    private final ShowSeatRepository showSeatRepository;
 
-    public ShowSeatServiceImpl(ShowSeatRepository showSeatRepository) {
+    @Autowired
+    private final SeatRepository seatRepository;
+
+    public ShowSeatServiceImpl(ShowSeatRepository showSeatRepository, SeatRepository seatRepository) {
         this.showSeatRepository = showSeatRepository;
+        this.seatRepository = seatRepository;
     }
 
 
@@ -48,17 +55,43 @@ public class ShowSeatServiceImpl implements ShowSeatService{
 
     }
 
+    @Override
+    @Transactional
+    public void createShowSeats(Show show) {
+
+        // 1. Fetch all seats of screen
+        List<Seat> seats = seatRepository.findByScreenId(show.getScreen().getId());
+
+        if (seats.isEmpty()) {
+            throw new RuntimeException("No seats found for screen");
+        }
+
+        // 2. Create show seats
+        List<ShowSeat> showSeats = seats.stream()
+                .map(seat -> {
+                    ShowSeat ss = new ShowSeat();
+                    ss.setShow(show);
+                    ss.setSeat(seat);
+                    ss.setStatus(SeatStatus.AVAILABLE);
+                    return ss;
+                })
+                .toList();
+
+        // 3. Save all
+        showSeatRepository.saveAll(showSeats);
+    }
+
 
     @Transactional
-    public void lockSeats(List<Long> showSeatIds){
+    public void lockSeats(List<Long> showSeatIds) {
 
         List<ShowSeat> seats = showSeatRepository.findAllById(showSeatIds);
 
-        for (ShowSeat seat : seats){
+        for (ShowSeat seat : seats) {
 
-            if (seat.getStatus() != SeatStatus.AVAILABLE){
+            if (seat.getStatus() != SeatStatus.AVAILABLE) {
 
-                throw  new RuntimeException("Seat is not available");
+                throw new RuntimeException("Seat is not available");
             }
 
             seat.setStatus(SeatStatus.LOCKED);
@@ -71,10 +104,6 @@ public class ShowSeatServiceImpl implements ShowSeatService{
 
 
     }
-
-
-
-
 
 
 }
