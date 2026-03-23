@@ -35,4 +35,9 @@ public class SeatController {
 
 
     }
+
+    @GetMapping("/shows/{showId}/seats")
+    public List<ShowSeat> getSeats(@PathVariable Long showId) {
+        return showSeatService.getAvailableSeats(showId);
+    }
 }

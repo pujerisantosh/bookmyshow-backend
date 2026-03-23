@@ -3,6 +3,7 @@ package dev.santosh.bookmyshowbackend.seatlock;
 import dev.santosh.bookmyshowbackend.seat.SeatStatus;
 import dev.santosh.bookmyshowbackend.seat.ShowSeat;
 import dev.santosh.bookmyshowbackend.seat.ShowSeatRepository;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,6 +20,10 @@ public class SeatLockServiceImpl implements SeatLockService {
 
     @Autowired
     private ShowSeatRepository showSeatRepository;
+
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Override
     @Transactional
@@ -56,6 +61,7 @@ public class SeatLockServiceImpl implements SeatLockService {
             lock.setLockTime(LocalDateTime.now());
             lock.setExpiryTime(LocalDateTime.now().plusMinutes(5));
             lock.setStatus(SeatLockStatus.ACTIVE);
+            redisTemplate.delete("show_seats_" + showId);
 
             seatLockRepository.save(lock);
         }
@@ -98,6 +104,7 @@ public class SeatLockServiceImpl implements SeatLockService {
 
         List<ShowSeat> seats = showSeatRepository.findAllById(seatIds);
 
+
         if (seats.size() != seatIds.size()) {
             throw new RuntimeException("Invalid seats selected");
         }
@@ -133,6 +140,8 @@ public class SeatLockServiceImpl implements SeatLockService {
         for (ShowSeat seat : seats) {
 
             if (seat.getStatus() == SeatStatus.LOCKED) {
+                redisTemplate.delete("show_seats_" + 2);
+
                 seat.setStatus(SeatStatus.AVAILABLE);
                 seat.setLockedAt(null);
             }
