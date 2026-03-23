@@ -8,4 +8,8 @@ public interface BookingService {
     void bookSeats(BookSeatRequest request);
 
     Booking createBooking(CreateBookingRequest request);
+
+    Booking confirmBooking(Long bookingId);
+
+    void markBookingFailed(Long bookingId);
 }

@@ -9,6 +9,7 @@ import dev.santosh.bookmyshowbackend.seat.ShowSeatRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -56,6 +57,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setUserId(request.getUserId());
         booking.setShowSeatIds(request.getShowSeatIds());
         booking.setStatus(BookingStatus.PENDING);
+        booking.setCreatedAt(LocalDateTime.now());
 
         return bookingRepository.save(booking);
     }
@@ -89,6 +91,11 @@ public class BookingServiceImpl implements BookingService {
         bookingEventPublisher.publishBookingConfirmed(savedBooking);
 
         return savedBooking;
+    }
+
+    @Override
+    public void markBookingFailed(Long bookingId) {
+
     }
 
 
