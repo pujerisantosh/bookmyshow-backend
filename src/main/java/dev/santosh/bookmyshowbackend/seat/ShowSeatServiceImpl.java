@@ -3,10 +3,12 @@ package dev.santosh.bookmyshowbackend.seat;
 import dev.santosh.bookmyshowbackend.show.Show;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ShowSeatServiceImpl implements ShowSeatService {
@@ -18,16 +20,17 @@ public class ShowSeatServiceImpl implements ShowSeatService {
     @Autowired
     private final SeatRepository seatRepository;
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+
     public ShowSeatServiceImpl(ShowSeatRepository showSeatRepository, SeatRepository seatRepository) {
         this.showSeatRepository = showSeatRepository;
         this.seatRepository = seatRepository;
     }
 
 
-    @Override
-    public List<ShowSeat> getAvailableSeats(Long showId) {
-        return showSeatRepository.findByShowIdAndStatus(showId, SeatStatus.AVAILABLE);
-    }
+
 
 
     @Transactional
@@ -103,6 +106,32 @@ public class ShowSeatServiceImpl implements ShowSeatService {
         showSeatRepository.saveAll(seats);
 
 
+    }
+
+
+    public List<ShowSeat> getAvailableSeats(Long showId) {
+
+        String key = "show_seats_" + showId;
+
+        // 🔥 1. Try Redis
+        List<ShowSeat> seats =
+                (List<ShowSeat>) redisTemplate.opsForValue().get(key);
+
+        if (seats != null) {
+            System.out.println("Fetching from Redis 🚀");
+            return seats;
+        }
+
+        // 🔥 2. Fetch from DB
+        seats = showSeatRepository.findByShowIdAndStatus(
+                showId, SeatStatus.AVAILABLE);
+
+        System.out.println("Fetching from DB 🐘");
+
+        // 🔥 3. Save in Redis (TTL 5 min)
+        redisTemplate.opsForValue().set(key, seats, 5, TimeUnit.MINUTES);
+
+        return seats;
     }
 
 

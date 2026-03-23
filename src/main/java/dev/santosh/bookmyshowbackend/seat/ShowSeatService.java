@@ -2,6 +2,7 @@ package dev.santosh.bookmyshowbackend.seat;
 
 import dev.santosh.bookmyshowbackend.show.Show;
 
+
 import java.util.List;
 
 public interface ShowSeatService {
@@ -15,6 +16,7 @@ public interface ShowSeatService {
 
 
     public void createShowSeats(Show show);
+
 
 
 }

@@ -7,6 +7,8 @@ import dev.santosh.bookmyshowbackend.seat.SeatStatus;
 import dev.santosh.bookmyshowbackend.seat.ShowSeat;
 import dev.santosh.bookmyshowbackend.seat.ShowSeatRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,6 +22,9 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
 
     private final BookingEventPublisher bookingEventPublisher;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     public BookingServiceImpl(ShowSeatRepository showSeatRepository, BookingRepository bookingRepository, BookingEventPublisher bookingEventPublisher) {
         this.showSeatRepository = showSeatRepository;
@@ -75,6 +80,7 @@ public class BookingServiceImpl implements BookingService {
 
         for (ShowSeat seat : seats) {
             if (seat.getStatus() != SeatStatus.LOCKED) {
+                redisTemplate.delete("show_seats_" + 2);
                 throw new RuntimeException("Seat not locked");
             }
             seat.setStatus(SeatStatus.BOOKED);
