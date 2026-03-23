@@ -124,4 +124,20 @@ public class SeatLockServiceImpl implements SeatLockService {
 
         showSeatRepository.saveAll(seats);
     }
+
+    @Override
+    @Transactional
+    public void releaseSeats(List<Long> showSeatIds) {
+        List<ShowSeat> seats = showSeatRepository.findAllById(showSeatIds);
+
+        for (ShowSeat seat : seats) {
+
+            if (seat.getStatus() == SeatStatus.LOCKED) {
+                seat.setStatus(SeatStatus.AVAILABLE);
+                seat.setLockedAt(null);
+            }
+        }
+
+        showSeatRepository.saveAll(seats);
+    }
 }

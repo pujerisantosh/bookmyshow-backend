@@ -12,5 +12,7 @@ public interface SeatLockService {
 
     void confirmSeats(Long showId, List<Long> seatIds, Long userId);
 
+    void releaseSeats(List<Long> showSeatIds);
+
 
 }
