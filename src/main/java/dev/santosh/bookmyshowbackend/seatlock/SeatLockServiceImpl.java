@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class SeatLockServiceImpl implements SeatLockService {
@@ -29,45 +30,31 @@ public class SeatLockServiceImpl implements SeatLockService {
     @Transactional
     public void lockSeats(Long showId, List<Long> seatIds, Long userId) {
 
-        // 🔥 DB LEVEL LOCK (CRITICAL)
-        List<ShowSeat> seats = showSeatRepository.findAllByIdForUpdateNative(seatIds);
+        for (Long seatId : seatIds) {
 
-        // ✅ Validate
-        if (seats.size() != seatIds.size()) {
-            throw new RuntimeException("Invalid seats selected");
-        }
+            String key = "seat_lock_" + seatId;
 
-        for (ShowSeat seat : seats) {
+            // 🔥 Redis Lock
+            Boolean locked = redisTemplate.opsForValue()
+                    .setIfAbsent(key, userId.toString(), 5, TimeUnit.MINUTES);
 
-            if (!seat.getShow().getId().equals(showId)) {
-                throw new RuntimeException("Seat does not belong to this show");
-            }
-
-            if (seat.getStatus() != SeatStatus.AVAILABLE) {
-                throw new RuntimeException("Seat already locked/booked: " + seat.getId());
+            if (!Boolean.TRUE.equals(locked)) {
+                throw new RuntimeException("Seat already locked: " + seatId);
             }
         }
 
-        // ✅ Update + create locks
-        for (ShowSeat seat : seats) {
+        // 🔥 Now update DB
+        List<ShowSeat> seats = showSeatRepository.findAllById(seatIds);
 
+        for (ShowSeat seat : seats) {
             seat.setStatus(SeatStatus.LOCKED);
             seat.setLockedAt(LocalDateTime.now());
-
-            SeatLock lock = new SeatLock();
-            lock.setShowId(showId);
-            lock.setSeatId(seat.getId());
-            lock.setUserId(userId);
-            lock.setLockTime(LocalDateTime.now());
-            lock.setExpiryTime(LocalDateTime.now().plusMinutes(5));
-            lock.setStatus(SeatLockStatus.ACTIVE);
-            redisTemplate.delete("show_seats_" + showId);
-
-            seatLockRepository.save(lock);
         }
 
-        // ✅ Save once
         showSeatRepository.saveAll(seats);
+
+        // 🔥 invalidate cache
+        redisTemplate.delete("show_seats_" + showId);
     }
 
     @Override
