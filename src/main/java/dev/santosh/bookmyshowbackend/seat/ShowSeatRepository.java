@@ -29,4 +29,6 @@ public interface ShowSeatRepository extends JpaRepository<ShowSeat, Long> {
 
     @Query(value = "SELECT * FROM show_seats WHERE id IN (:ids) FOR UPDATE", nativeQuery = true)
     List<ShowSeat> findAllByIdForUpdateNative(@Param("ids") List<Long> ids);
+
+    List<ShowSeat> findByStatus(SeatStatus seatStatus);
 }
